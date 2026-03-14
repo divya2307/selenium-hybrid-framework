@@ -1,0 +1,12 @@
+pages/PractisePage.class
+pages/SignUp.class
+dataProvider/CustomDataProvider.class
+listeners/ExtentManager.class
+base/BaseClass.class
+dataProvider/ExcelReader.class
+listeners/ExtentTestNGITestListner.class
+pages/HomePage.class
+dataProvider/ConfigReader.class
+pages/LoginPage.class
+helper/Utilities.class
+browserFactory/BrowserFactory.class
