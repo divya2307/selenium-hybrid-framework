@@ -87,6 +87,5 @@ pipeline{
 	        failure {
 	            echo 'Automation pipeline failed. Check reports and logs.'
 	        }
-	}
-	
+	}	
 }
