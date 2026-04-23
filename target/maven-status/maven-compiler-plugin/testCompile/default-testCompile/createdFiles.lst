@@ -1,1 +1,7 @@
 testcases/LoginTest.class
+testcases/HomeTest.class
+dbTests/SampleDBTest.class
+apiTests/SampleAPITest.class
+stepdefinitions/LoginSteps.class
+hooks/Hooks.class
+runners/CucumberTestRunner.class

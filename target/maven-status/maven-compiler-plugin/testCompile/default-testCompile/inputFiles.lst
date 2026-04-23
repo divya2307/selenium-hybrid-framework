@@ -1,1 +1,7 @@
-/Users/sunnypai/eclipse-workspace/HybridFramework/src/test/java/testcases/LoginTest.java
+/Users/divya/eclipse-workspace/HybridFramework/src/test/java/apiTests/SampleAPITest.java
+/Users/divya/eclipse-workspace/HybridFramework/src/test/java/dbTests/SampleDBTest.java
+/Users/divya/eclipse-workspace/HybridFramework/src/test/java/hooks/Hooks.java
+/Users/divya/eclipse-workspace/HybridFramework/src/test/java/runners/CucumberTestRunner.java
+/Users/divya/eclipse-workspace/HybridFramework/src/test/java/stepdefinitions/LoginSteps.java
+/Users/divya/eclipse-workspace/HybridFramework/src/test/java/testcases/HomeTest.java
+/Users/divya/eclipse-workspace/HybridFramework/src/test/java/testcases/LoginTest.java

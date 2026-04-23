@@ -44,23 +44,54 @@ public class ExtentTestNGITestListner implements ITestListener{
 	
 	public void onTestSuccess(ITestResult result) {
 		String base64 = Utilities.captureScreenshotBase64Format(BrowserFactory.getDriverInstance());
-		
-		parentTestThreadLocal.get().pass("Test Passed",MediaEntityBuilder.createScreenCaptureFromBase64String(base64).build());
+		if (base64 != null) {
+			parentTestThreadLocal.get().pass("Test Passed",MediaEntityBuilder.createScreenCaptureFromBase64String(base64).build());
+		}
+		else {
+			parentTestThreadLocal.get().pass("Test Passed - screenshot not available");
+		}
+		parentTestThreadLocal.remove();
 	    
 	  }
 
 	public void onTestFailure(ITestResult result) {
 		String base64 = Utilities.captureScreenshotBase64Format(BrowserFactory.getDriverInstance());
 		
-		parentTestThreadLocal.get().fail("Test Failed" + result.getThrowable().getMessage(),MediaEntityBuilder.createScreenCaptureFromBase64String(base64).build());
+		String errorMessage = result.getThrowable() != null
+		        ? result.getThrowable().getMessage()
+		        : "No exception message available";
+		
+		if (base64 != null) {
+	        parentTestThreadLocal.get().fail(
+	            "Test Failed: " + errorMessage,
+	            MediaEntityBuilder.createScreenCaptureFromBase64String(base64).build()
+	        );
+	    } else {
+	        parentTestThreadLocal.get().fail("Test Failed: " + errorMessage + " - screenshot not available");
+	    }
+		
+		parentTestThreadLocal.remove();
 	    
 	  }
 	
 	public void onTestSkipped(ITestResult result) {
 		String base64 = Utilities.captureScreenshotBase64Format(BrowserFactory.getDriverInstance());
 	    
-		parentTestThreadLocal.get().skip("Test Skipped" + result.getThrowable().getMessage(),MediaEntityBuilder.createScreenCaptureFromBase64String(base64).build());
-	  }
+		String skipMessage = result.getThrowable() != null
+		        ? result.getThrowable().getMessage()
+		        : "No skip reason available";
+		    
+		    if (base64 != null) {
+		        parentTestThreadLocal.get().skip(
+		            "Test Skipped: " + skipMessage,
+		            MediaEntityBuilder.createScreenCaptureFromBase64String(base64).build()
+		        );
+		    } else {
+		        parentTestThreadLocal.get().skip("Test Skipped: " + skipMessage + " - screenshot not available");
+		    }
+		    
+		    parentTestThreadLocal.remove();
+	}
 	
 	public void onFinish(ITestContext context) {
 		

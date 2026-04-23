@@ -3,7 +3,7 @@ package pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-
+import helper.WaitUtils;
 import base.BaseClass;
 
 
@@ -36,10 +36,10 @@ public class LoginPage extends BaseClass {
 //	}
 	
 	public void loginToApplication(String uname, String pwd) {
-		driver.findElement(username).sendKeys(uname);
-		driver.findElement(password).sendKeys(pwd);
-		driver.findElement(signinBtn).click();
-//		
+		
+		WaitUtils.waitForElementVisible(driver, username, 10).sendKeys(uname);
+		WaitUtils.waitForElementVisible(driver, password, 10).sendKeys(pwd);
+		WaitUtils.waitForElementClickable(driver, signinBtn, 10).click();	
 		//return new HomePage();
 	}
 	
@@ -57,7 +57,7 @@ public class LoginPage extends BaseClass {
 	}
 	
 	public String textValidate() {
-		return driver.findElement(text_validate).getText();
+		return WaitUtils.waitForElementVisible(driver, text_validate, 10).getText();
 	}
 	
 	public void signOut() {

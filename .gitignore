@@ -1,0 +1,26 @@
+# Maven build output
+target/
+
+# TestNG output
+test-output/
+
+# Reports and logs
+reports/
+logs/
+Screenshots/
+ElementScreenshot/
+
+# OS files
+.DS_Store
+
+# Eclipse IDE files
+.classpath
+.project
+.settings/
+
+# Java compiled files
+*.class
+
+# Temporary files
+*.log
+*.tmp

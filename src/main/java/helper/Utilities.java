@@ -141,6 +141,10 @@ public class Utilities {
 	
 	public static String captureScreenshotBase64Format(WebDriver driver) {
 		
+		if (driver == null) {
+	        return null;
+	    }
+		
 		TakesScreenshot tScreenshot = (TakesScreenshot) driver;
 		
 		String base64 = tScreenshot.getScreenshotAs(OutputType.BASE64);

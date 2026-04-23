@@ -1,8 +1,8 @@
 package dataProvider;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -12,7 +12,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class ExcelReader {
 	
-	static XSSFWorkbook wbWorkbook;
 
   public static Object[][] getDataFromSheet(String sheetname){
 	  
@@ -20,8 +19,16 @@ public class ExcelReader {
 	  
 	  Object[][] arr = null;
 	  try {
+		  
+		  InputStream inputStream = ExcelReader.class
+				    .getClassLoader()
+				    .getResourceAsStream("testdata/testData.xlsx");
+		  
+		  if (inputStream == null) {
+	            throw new RuntimeException("testData.xlsx file not found in src/test/resources/testdata");
+	        }
 	  
-	    wbWorkbook = new XSSFWorkbook(new FileInputStream(new File(System.getProperty("user.dir")+"/testdata/testData.xlsx")));
+		XSSFWorkbook wbWorkbook = new XSSFWorkbook(inputStream);
 		
 		XSSFSheet sheet = wbWorkbook.getSheet(sheetname);
 		
@@ -32,7 +39,7 @@ public class ExcelReader {
 		
 		for (int i = 1 ; i<row ; i++) {		
 			for (int j=0 ; j<col ; j++) {	
-				arr[i-1][j] = getData(sheetname, i, j);
+				arr[i-1][j] = getData(sheet, i, j);
 			}
 		}
 		
@@ -46,26 +53,21 @@ public class ExcelReader {
 	  return arr;
   }
   
-  public static String getData(String sheetName, int row, int column) {
+  public static String getData(XSSFSheet sheet, int row, int column) {
 	  
-	 XSSFCell cell =  wbWorkbook.getSheet(sheetName).getRow(row).getCell(column);
+	 XSSFCell cell =  sheet.getRow(row).getCell(column);
 	 String data = "";
 	 
-	 if (cell.getCellType() == CellType.STRING) {
-		 
-		 data = cell.getStringCellValue();
-		 
-	 }
-	 else if (cell.getCellType() == CellType.NUMERIC) {
-		 
-		 
-		double num = cell.getNumericCellValue();
-		data = String.valueOf(num);
-		
-	 }
-	 else if (cell.getCellType() == CellType.BLANK) {
-		 data = "";
-	 }
+	 if (cell == null || cell.getCellType() == CellType.BLANK) {
+	        data = "";
+	    } else if (cell.getCellType() == CellType.STRING) {
+	        data = cell.getStringCellValue();
+	    } else if (cell.getCellType() == CellType.NUMERIC) {
+	        double num = cell.getNumericCellValue();
+	        data = String.valueOf(num);
+	    } else if (cell.getCellType() == CellType.BOOLEAN) {
+	        data = String.valueOf(cell.getBooleanCellValue());
+	  }
 	  
 	  return data;
   }

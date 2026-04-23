@@ -1,6 +1,7 @@
 package browserFactory;
 
 import java.time.Duration;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,18 +14,49 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.safari.SafariDriver;
 
+import dataProvider.ConfigReader;
+
+/***
+ * BrowserFactory is already responsible for below, all driver-related logic in one place:
+ * browser selection
+	driver creation
+	browser options
+	timeouts
+	launching URL
+	
+	
+	I added ThreadLocal WebDriver in BrowserFactory because WebDriver is a shared framework-level object. 
+	Earlier it was static, which works for sequential execution but can cause driver conflicts in parallel execution. 
+	With ThreadLocal, each test thread gets its own isolated browser instance.
+	BrowserFactory is the right place because it owns browser creation and driver management.”
+ */
+
 public class BrowserFactory {
 	
-	public static WebDriver driver;
+	private static ThreadLocal<WebDriver> tlDriver = new ThreadLocal<WebDriver>();
 	
 	public static WebDriver getDriverInstance() {
-		return driver;	
+		return tlDriver.get();	
 	}
+	
+	public static void setDriver(WebDriver driver) {
+		tlDriver.set(driver);
+	}
+	public static void removeDriver() {
+		tlDriver.remove();
+	}
+	
 	
 	public static WebDriver setOptions(WebDriver driver , String browser) {
 		
 		if (browser.equalsIgnoreCase("Chrome")) {
 			ChromeOptions options = new ChromeOptions();
+			
+			if(Boolean.parseBoolean(ConfigReader.getProperty("headless"))) {
+				options.addArguments("--headless=new");
+				options.addArguments("--window-size=1920,1080");
+			}
+				
 
 			// Create a map to store preferences
 			Map<String, Object> prefs = new HashMap<String, Object>();
@@ -46,6 +78,11 @@ public class BrowserFactory {
 		
 		else if(browser.equalsIgnoreCase("Edge")) {
 			EdgeOptions options = new EdgeOptions();
+			
+			if (Boolean.parseBoolean(ConfigReader.getProperty("headless"))) {
+			    options.addArguments("--headless=new");
+			    options.addArguments("--window-size=1920,1080");
+			}
 
 			// Create a map to store preferences
 			Map<String, Object> prefs = new HashMap<String, Object>();
@@ -68,6 +105,10 @@ public class BrowserFactory {
 		else if(browser.equalsIgnoreCase("Firefox")) {
 			
 			FirefoxOptions options = new FirefoxOptions();
+			
+			if (Boolean.parseBoolean(ConfigReader.getProperty("headless"))) {
+			    options.addArguments("--headless");
+			}
 
 			// Disable the "Remember Logins" prompt
 			options.addPreference("signon.rememberSignons", false);
@@ -89,6 +130,16 @@ public class BrowserFactory {
 
 	
 	public static WebDriver startBrowser(String browser, String applicationURL) {
+		//I am preparing a local variable. Based on the browser name, 
+		//I will assign ChromeDriver, FirefoxDriver, EdgeDriver, etc
+		
+		/***
+		 * I use a local WebDriver variable during browser creation because ThreadLocal should store the final driver object after it is created. 
+		 * Setting ThreadLocal to null at the beginning is not useful because it still returns null and does not create a browser. 
+		 * For cleanup, I use remove() instead of setting null, because remove() clears the ThreadLocal value completely for that thread.”
+		 */
+		
+		WebDriver driver = null;
 		
 		if (browser.equalsIgnoreCase("Chrome") || browser.equalsIgnoreCase("GC") || browser.equalsIgnoreCase("Google Chrome")) {
 			driver = setOptions(driver,"Chrome");
@@ -108,13 +159,15 @@ public class BrowserFactory {
 			driver = setOptions(driver,"Chrome");
 		}
 		
-		driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(30));
-		driver.manage().timeouts().scriptTimeout(Duration.ofSeconds(15));
-		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(20));
-		driver.manage().window().maximize();
-		driver.get(applicationURL);
+		setDriver(driver);
 		
-		return driver;
+		getDriverInstance().manage().timeouts().pageLoadTimeout(Duration.ofSeconds(30));
+		getDriverInstance().manage().timeouts().scriptTimeout(Duration.ofSeconds(15));
+		getDriverInstance().manage().timeouts().implicitlyWait(Duration.ofSeconds(20));
+		getDriverInstance().manage().window().maximize();
+		getDriverInstance().get(applicationURL);
+		
+		return getDriverInstance();
 	}
 
 }
